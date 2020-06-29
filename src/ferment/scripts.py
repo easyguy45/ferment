@@ -99,9 +99,11 @@ def docker_config(ctx):
 
     # get all networks
     networks = ctx.obj.client.networks()
-    ctx.obj.networks = [
-        ctx.obj.client.inspect_network(network['Id'])
-        for network in networks
-    ]
+    
+    ctx.obj.networks = []
+
+    for network in networks:
+        if network['Driver'] == 'bridge':
+            ctx.obj.networks.append(ctx.obj.client.inspect_network(network['Id']))
 
     click.echo(ferm.get_config(ctx.obj))
